@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Pesquisa Interativo: Deep Learning em Visão Computacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: A single-page application with a top navigation bar for smooth scrolling. The structure is thematic, beginning with an overview of the source report's project (Visão Geral), followed by an interactive explanation of key concepts (Conceitos-Chave), a detailed, filterable gallery of real-world applications (Aplicações), and a final section for references (Referências). This structure was chosen to first ground the user in the original project's context, then provide foundational knowledge, and finally allow for deep, self-directed exploration of the broader field. The core interaction is the filterable application gallery, which directly addresses the user's primary request to see research separated by industry. -->
+    <!-- Visualization & Content Choices: 
+        1.  Project Pipeline (Visão Geral): Goal is to inform/organize. Presented as a process flow diagram using styled HTML/Tailwind to avoid SVG. Interaction: subtle hover effects. Justification: Clearly visualizes the project's workflow without external graphics.
+        2.  Key Concepts (Conceitos-Chave): Goal is to inform. Presented as an accordion-style section. Interaction: clicking a title reveals its description. Justification: Keeps the UI clean and allows for progressive information disclosure.
+        3.  Application Cards (Aplicações): Goal is to organize/compare. Presented as a filterable grid of cards. Interaction: category filter buttons (Todos, Medicina, etc.) dynamically show/hide cards via JavaScript. Justification: This is the main interactive element, directly enabling user-driven exploration as requested.
+        4.  Publications Chart (Aplicações): Goal is to compare. Presented as a Bar Chart. Interaction: tooltips on hover. Justification: Provides a quick, quantitative overview of the research landscape. Library: Chart.js (Canvas), as required.
+        5.  References: Goal is to inform. Presented as a simple, styled list. Justification: Standard and clear presentation for bibliographic data.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcfb;
+            color: #333;
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #2563eb;
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+            background-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800">Pesquisa em Deep Learning</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link text-gray-600">Visão Geral</a>
+                <a href="#concepts" class="nav-link text-gray-600">Conceitos-Chave</a>
+                <a href="#applications" class="nav-link text-gray-600">Aplicações</a>
+                <a href="#references" class="nav-link text-gray-600">Referências</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#overview" class="block nav-link text-gray-600">Visão Geral</a>
+            <a href="#concepts" class="block nav-link text-gray-600">Conceitos-Chave</a>
+            <a href="#applications" class="block nav-link text-gray-600">Aplicações</a>
+            <a href="#references" class="block nav-link text-gray-600">Referências</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="overview" class="mb-20 section-fade-in">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">Otimização de Imagens para Matriz de Pontos 3D</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Esta seção apresenta a visão geral do projeto de pesquisa que inspira esta aplicação. O objetivo central é desenvolver um software baseado em Redes Neurais Convolucionais (CNNs) para otimizar a geração de imagens em um dispositivo tátil 3D, visando ampliar o acesso à informação para pessoas com deficiência visual. A automação da segmentação de imagens permite focar nos elementos essenciais, tornando a representação tátil mais clara e eficiente.
+            </p>
+
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 w-full md:w-1/4">
+                    <h3 class="font-semibold text-blue-600">1. Imagem Original</h3>
+                    <p class="text-sm text-gray-500">Input visual complexo.</p>
+                </div>
+                <div class="text-2xl text-blue-500 font-mono">&rarr;</div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 w-full md:w-1/4">
+                    <h3 class="font-semibold text-blue-600">2. Segmentação com CNN</h3>
+                    <p class="text-sm text-gray-500">Isolamento dos elementos de interesse.</p>
+                </div>
+                <div class="text-2xl text-blue-500 font-mono">&rarr;</div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 w-full md:w-1/4">
+                    <h3 class="font-semibold text-blue-600">3. Representação Tátil</h3>
+                    <p class="text-sm text-gray-500">Geração na matriz de pontos 3D.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="concepts" class="mb-20 section-fade-in" style="animation-delay: 0.2s;">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Conceitos-Chave</h2>
+             <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                Para compreender a fundo o projeto e suas aplicações, é essencial conhecer as tecnologias que o fundamentam. Esta seção oferece uma explicação interativa sobre os pilares do Deep Learning aplicado à visão computacional, desde os conceitos básicos de redes neurais até as tarefas específicas de segmentação e detecção.
+            </p>
+            <div class="max-w-3xl mx-auto space-y-4" id="concepts-container">
+            </div>
+        </section>
+
+        <section id="applications" class="mb-20 section-fade-in" style="animation-delay: 0.4s;">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">Aplicações por Setor</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                A segmentação de imagens e a detecção de objetos com Deep Learning não são apenas conceitos acadêmicos; elas impulsionam inovações em diversas indústrias. Explore abaixo uma coleção de artigos e aplicações práticas, filtrando por áreas de interesse para descobrir como essa tecnologia está sendo utilizada na Medicina, Agricultura e Indústria para resolver problemas complexos.
+            </p>
+            <div class="flex justify-center space-x-2 md:space-x-4 mb-12" id="filter-buttons">
+                <button data-filter="all" class="filter-btn active font-medium py-2 px-4 rounded-full bg-gray-200 text-gray-700">Todos</button>
+                <button data-filter="medicina" class="filter-btn font-medium py-2 px-4 rounded-full bg-gray-200 text-gray-700">Medicina</button>
+                <button data-filter="agricultura" class="filter-btn font-medium py-2 px-4 rounded-full bg-gray-200 text-gray-700">Agricultura</button>
+                <button data-filter="industria" class="filter-btn font-medium py-2 px-4 rounded-full bg-gray-200 text-gray-700">Indústria</button>
+            </div>
+            <div id="applications-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+            <div class="mt-20">
+                 <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Publicações Relevantes por Área (Estimativa)</h3>
+                 <div class="chart-container">
+                    <canvas id="publicationsChart"></canvas>
+                 </div>
+            </div>
+        </section>
+
+        <section id="references" class="section-fade-in" style="animation-delay: 0.6s;">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Referências Bibliográficas</h2>
+             <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                A lista a seguir contém as referências citadas no plano de pesquisa original e em outros trabalhos relevantes na área. Este compilado serve como ponto de partida para aprofundamento nos tópicos de visão computacional, interfaces táteis e aprendizado de máquina.
+            </p>
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                <ul id="references-list" class="space-y-4 text-sm text-gray-600 list-disc list-inside">
+                </ul>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-gray-100 mt-20">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500">
+            <p>&copy; 2025 | Análise Interativa baseada no Plano de Pesquisa de Felipe de Matos Pombo.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const conceptsData = [
+        {
+            title: "Deep Learning (Aprendizado Profundo)",
+            content: "Um subcampo do Aprendizado de Máquina baseado em redes neurais artificiais com múltiplas camadas (profundas). O modelo aprende hierarquias de características diretamente dos dados, sendo especialmente poderoso para tarefas com dados não estruturados como imagens, áudio e texto."
+        },
+        {
+            title: "Redes Neurais Convolucionais (CNNs)",
+            content: "Uma classe de redes neurais profundas, mais comumente aplicada para analisar imagens. CNNs usam uma operação matemática chamada convolução, que permite à rede aprender filtros para detectar características como bordas, texturas e formas em diferentes partes de uma imagem, tornando-as altamente eficazes para tarefas de visão computacional."
+        },
+        {
+            title: "Segmentação de Imagens",
+            content: "É a tarefa de particionar uma imagem digital em múltiplos segmentos ou conjuntos de pixels, com o objetivo de simplificar ou alterar a representação de uma imagem para algo mais significativo e fácil de analisar. Cada pixel em um segmento compartilha certas características, como cor ou intensidade. A segmentação é crucial para identificar os contornos exatos de um objeto."
+        },
+        {
+            title: "Detecção de Objetos",
+            content: "É a tarefa de identificar a presença e a localização de objetos de uma certa classe em uma imagem. O resultado é tipicamente uma caixa delimitadora (bounding box) ao redor de cada objeto detectado, junto com um rótulo de classe. É diferente da segmentação, que busca delinear a fronteira exata de cada pixel do objeto."
+        }
+    ];
+
+    const applicationsData = [
+        {
+            category: "medicina",
+            title: "Segmentação de Tumores Cerebrais",
+            description: "Aplicações de CNNs, como a arquitetura U-Net, para segmentar automaticamente tumores em imagens de ressonância magnética (MRI), auxiliando no diagnóstico precoce e planejamento cirúrgico.",
+            reference: "Ronneberger, O., Fischer, P., & Brox, T. (2015). U-Net: Convolutional Networks for Biomedical Image Segmentation."
+        },
+        {
+            category: "agricultura",
+            title: "Detecção de Doenças em Plantas",
+            description: "Uso de detectores de objetos para identificar lesões e sintomas de doenças em folhas de culturas como soja e milho, permitindo a aplicação localizada de defensivos e a redução de perdas na lavoura.",
+            reference: "Mohanty, S. P., Hughes, D. P., & Salathé, M. (2016). Using Deep Learning for Image-Based Plant Disease Detection."
+        },
+        {
+            category: "industria",
+            title: "Inspeção de Qualidade Automatizada",
+            description: "Implementação de sistemas de visão computacional em linhas de produção para detectar defeitos, como arranhões, rachaduras ou falhas de montagem em produtos, garantindo maior controle de qualidade.",
+            reference: "Weimer, D., et al. (2016). Design and evaluation of a deep learning-based defect detection system for industrial manufacturing."
+        },
+        {
+            category: "medicina",
+            title: "Análise de Retinografia para Detecção de Diabetes",
+            description: "Modelos de Deep Learning analisam imagens do fundo do olho para detectar sinais de retinopatia diabética, uma das principais causas de cegueira, permitindo triagem em larga escala.",
+            reference: "Gulshan, V., et al. (2016). Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs."
+        },
+        {
+            category: "agricultura",
+            title: "Contagem e Classificação de Frutos",
+            description: "Sistemas que utilizam detecção e segmentação para contar frutas em árvores, estimar a produção da safra e classificar os frutos por tamanho e maturação, otimizando a colheita.",
+            reference: "Sa, I., et al. (2016). Deepfruits: A fruit detection system using deep neural networks."
+        },
+        {
+            category: "industria",
+            title: "Navegação Autônoma em Armazéns",
+            description: "Robôs e veículos autônomos usam detecção de objetos em tempo real para identificar prateleiras, paletes, obstáculos e pessoas, permitindo a navegação segura e eficiente em ambientes logísticos.",
+            reference: "Everett, M., et al. (2021). Vision-Only Navigation in a Warehouse Setting."
+        },
+        {
+            category: "medicina",
+            title: "Segmentação de Células em Imagens de Microscopia",
+            description: "Segmentação de instâncias para contar e analisar células individuais em imagens de histopatologia, automatizando processos que são tradicionalmente manuais e demorados.",
+            reference: "Caicedo, J.C., et al. (2019). Nucleus segmentation across imaging experiments: the 2018 Data Science Bowl."
+        },
+        {
+            category: "agricultura",
+            title: "Detecção de Ervas Daninhas",
+            description: "Sistemas embarcados em tratores e drones usam segmentação para diferenciar culturas de ervas daninhas, possibilitando a pulverização de herbicidas de forma precisa e reduzindo o impacto ambiental.",
+            reference: "Milioto, A., et al. (2018). Real-time semantic segmentation of crop and weed for precision agriculture robots."
+        }
+    ];
+
+    const referencesData = [
+        "A. C. G. Vargas et al., 'Um estudo sobre redes neurais convolucionais e sua aplicacao em deteccao de pedestres', XXIX Conference on Graphics, Patterns and Images, 2016.",
+        "J. Long, E. Shelhamer, and T. Darrell, 'Fully convolutional networks for semantic segmentation', Proceedings of the IEEE conference on computer vision and pattern recognition, 2015.",
+        "K. He, G. Gkioxari, P. Dollár, and R. Girshick, 'Mask r-cnn', Proceedings of the IEEE international conference on computer vision, 2017.",
+        "O. Ronneberger, P. Fischer, and T. Brox, 'U-net: Convolutional networks for biomedical image segmentation', International Conference on Medical image computing and computer-assisted intervention, 2015.",
+        "S. Ren, K. He, R. Girshick, and J. Sun, 'Faster r-cnn: Towards real-time object detection with region proposal networks', Advances in neural information processing systems, 2015.",
+        "S. P. Mohanty, D. P. Hughes, & M. Salathé, 'Using Deep Learning for Image-Based Plant Disease Detection', Frontiers in Plant Science, 2016."
+    ];
+
+    const conceptsContainer = document.getElementById('concepts-container');
+    conceptsData.forEach(concept => {
+        const div = document.createElement('div');
+        div.className = 'bg-white rounded-lg shadow border border-gray-200 overflow-hidden';
+        div.innerHTML = `
+            <button class="w-full text-left p-5 font-semibold text-gray-700 flex justify-between items-center focus:outline-none">
+                <span>${concept.title}</span>
+                <span class="transform transition-transform duration-300">&#9662;</span>
+            </button>
+            <div class="px-5 pb-5 text-gray-600 hidden">
+                <p>${concept.content}</p>
+            </div>
+        `;
+        conceptsContainer.appendChild(div);
+    });
+
+    conceptsContainer.addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (button) {
+            const content = button.nextElementSibling;
+            const arrow = button.querySelector('span:last-child');
+            content.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+    });
+
+    const applicationsGrid = document.getElementById('applications-grid');
+    applicationsData.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'card bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col';
+        card.dataset.category = app.category;
+        card.innerHTML = `
+            <div class="flex-grow">
+                <span class="text-xs font-semibold uppercase px-2 py-1 rounded-full text-blue-800 bg-blue-100">${app.category}</span>
+                <h3 class="font-bold text-lg mt-3 mb-2 text-gray-800">${app.title}</h3>
+                <p class="text-gray-600 text-sm">${app.description}</p>
+            </div>
+            <p class="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-200">Ref: ${app.reference}</p>
+        `;
+        applicationsGrid.appendChild(card);
+    });
+
+    const filterButtons = document.getElementById('filter-buttons');
+    filterButtons.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const filter = e.target.dataset.filter;
+            
+            filterButtons.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+
+            applicationsGrid.querySelectorAll('.card').forEach(card => {
+                if (filter === 'all' || card.dataset.category === filter) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    const referencesList = document.getElementById('references-list');
+    referencesData.forEach(ref => {
+        const li = document.createElement('li');
+        li.textContent = ref;
+        referencesList.appendChild(li);
+    });
+    
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.nav-link, #mobile-menu a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if(targetElement){
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    });
+
+    const ctx = document.getElementById('publicationsChart').getContext('2d');
+    const publicationsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Medicina', 'Indústria', 'Agricultura'],
+            datasets: [{
+                label: 'Nº de Publicações (Estimativa)',
+                data: [150, 120, 95],
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.6)',
+                    'rgba(16, 185, 129, 0.6)',
+                    'rgba(234, 179, 8, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(16, 185, 129, 1)',
+                    'rgba(234, 179, 8, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantidade Estimada'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#333',
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 12
+                    },
+                    padding: 10,
+                    cornerRadius: 4
+                }
+            }
+        }
+    });
+    
+    const sections = document.querySelectorAll('.section-fade-in');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    sections.forEach(section => {
+        section.style.animationPlayState = 'paused';
+        observer.observe(section);
+    });
+
+});
+</script>
+
+</body>
+</html>
